@@ -1,0 +1,32 @@
+CREATE TABLE `clients` (
+`id` int(11) NOT NULL,
+`name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+`token_id` int(11) NOT NULL,
+`token` text COLLATE utf8mb4_unicode_ci NOT NULL,
+`authnet_api_login_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+`authnet_transaction_key` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+`status` tinyint(1) DEFAULT NULL,
+`created_at` datetime NOT NULL,
+`updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `users` (
+`id` int(11) NOT NULL,
+`user` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+`hash` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `users` (`id`, `user`, `hash`) VALUES
+(1, 'admin', '$2y$10$JomknCE3XxR8K.rrrtP9zeB.6hF.9MMR7QTfE5Oo.uyxTjO6h8Q7C');
+
+ALTER TABLE `clients`
+ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `users`
+ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `clients`
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=3;
+
+ALTER TABLE `users`
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;

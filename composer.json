@@ -1,0 +1,23 @@
+{
+  "name": "SlimAuthnet",
+  "description": "A neat little thingy to process credit cards with Authorize.net built with Slim Framework.",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Butch Ewing",
+      "email": "butch@butchewing.com",
+      "homepage": "http://www.butchewing.com/"
+    }
+  ],
+  "require": {
+    "php": ">=5.3.0",
+    "monolog/monolog": "1.*",
+    "slim/slim": "2.*",
+    "slim/views": "0.*",
+    "twig/twig": "1.*",
+    "authorizenet/authorizenet": "~1.8",
+    "tuupola/slim-jwt-auth": "0.3.*",
+    "vlucas/phpdotenv": "~2.0",
+    "tuupola/slim-basic-auth": "0.11.*"
+  }
+}

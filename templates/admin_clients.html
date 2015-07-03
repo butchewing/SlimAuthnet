@@ -1,0 +1,43 @@
+{% extends "admin_layout.html" %}
+
+{% block content %}
+<h1>{{ title }}</h1>
+<div><a href="{{ base_url }}/admin/clients/add" class="btn btn-info">Add New Client</a></div>
+<div class="bs-example">
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Authnet API Login ID</th>
+        <th>Authnet Transaction Key</th>
+        <th>Status</th>
+        <th colspan="2" align="center">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if data %}
+      {% for row in data %}
+      <tr>
+        <td>{{ row.name }}</td>
+        <td>{{ row.authnet_api_login_id }}</td>
+        <td>{{ row.authnet_transaction_key }}</td>
+        <td>{{ row.status }}</td>
+        <td><a href="{{ base_url }}/admin/clients/{{ row.id }}" class="btn btn-info">Edit</a></td>
+        <td>
+          <form action="{{ base_url }}/admin/clients" method="POST">
+            <input class="btn btn-danger" type="submit" value="Delete" onclick="return confirm('Are you sure you want to delete this item?');">
+            <input type="hidden" name="_METHOD" value="DELETE">
+            <input type="hidden" id="client_id" name="client_id" value="{{row.id}}">
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+      {% else %}
+      <p>No records found</p>
+      {% endif %}
+    </tbody>
+  </table>
+</div>
+{% endblock content %}
+
+

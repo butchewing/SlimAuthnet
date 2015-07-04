@@ -439,7 +439,8 @@ $app->post('/api/aim', function() {
     $db  = getDB();
     $sth = $db->prepare("SELECT *
                 FROM clients
-                WHERE token_id = :id");
+                WHERE token_id = :id
+                AND status = 1");
     $sth->bindParam(':id', $app->jwt->jti, PDO::PARAM_INT);
     $sth->execute();
     $client = $sth->fetch(PDO::FETCH_OBJ);

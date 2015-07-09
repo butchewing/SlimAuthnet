@@ -34,35 +34,34 @@ $app->config('debug', getenv('DEBUG'));
  */
 function getDB()
 {
-  $dbhost = getenv('DB_HOST');
-  $dbuser = getenv('DB_USER');
-  $dbpass = getenv('DB_PASS');
-  $dbname = getenv('DB_NAME');
-
-  $mysql_conn_string = "mysql:host=$dbhost;dbname=$dbname";
-  $dbConnection      = new PDO($mysql_conn_string, $dbuser, $dbpass);
+  $dbhost       = getenv('DB_HOST');
+  $dbuser       = getenv('DB_USER');
+  $dbpass       = getenv('DB_PASS');
+  $dbname       = getenv('DB_NAME');
+  $dbdriver     = getenv('DB_DRIVER');
+  $dsn          = "$dbdriver:server=$dbhost;database=$dbname";
+  $dbConnection = new PDO($dsn, $dbuser, $dbpass);
   $dbConnection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
   return $dbConnection;
-
 }//end getDB()
 
 
-$app->add(
-  new \Slim\Middleware\HttpBasicAuthentication(
-    array(
-      "path"          => "/admin",
-      "realm"         => "Here be dragons.",
-      "authenticator" => new PdoAuthenticator([
-        "pdo"         => getDB()
-      ]),
-      "error"         => function ($arguments) use ($app) {
-        $response["status"]  = "error";
-        $response["message"] = $arguments["message"];
-        $app->response->write(json_encode($response, JSON_UNESCAPED_SLASHES));
-      }
-    )
-  )
-);
+// $app->add(
+//   new \Slim\Middleware\HttpBasicAuthentication(
+//     array(
+//       "path"          => "/admin",
+//       "realm"         => "Here be dragons.",
+//       "authenticator" => new PdoAuthenticator([
+//         "pdo"         => getDB()
+//       ]),
+//       "error"         => function ($arguments) use ($app) {
+//         $response["status"]  = "error";
+//         $response["message"] = $arguments["message"];
+//         $app->response->write(json_encode($response, JSON_UNESCAPED_SLASHES));
+//       }
+//     )
+//   )
+// );
 
 
 // Create monolog logger and store logger in container as singleton
@@ -75,14 +74,14 @@ $app->container->singleton('log', function () {
 
 
 // Start Authentication
-$app->add(new \Slim\Middleware\JwtAuthentication([
-  "path"     => "/api",
-  "logger"   => $logger,
-  "secret"   => getenv('SECRET_KEY'),
-  "callback" => function($options) use($app) {
-    $app->jwt = $options["decoded"];
-  }
-]));
+// $app->add(new \Slim\Middleware\JwtAuthentication([
+//   "path"     => "/api",
+//   "logger"   => $logger,
+//   "secret"   => getenv('SECRET_KEY'),
+//   "callback" => function($options) use($app) {
+//     $app->jwt = $options["decoded"];
+//   }
+// ]));
 
 
 // Prepare view
@@ -187,7 +186,7 @@ $app->post("/admin/clients/add", function() {
     $sth = $db->prepare("INSERT INTO clients
               (name, token_id, token, authnet_api_login_id, authnet_transaction_key, status, created_at)
               VALUES
-              (:name, :token_id, :token, :authnet_api_login_id, :authnet_transaction_key, :status, now())");
+              (:name, :token_id, :token, :authnet_api_login_id, :authnet_transaction_key, :status, getdate())");
     $sth->execute(
       array(
         ':name'                    => $name,
@@ -301,8 +300,7 @@ $app->delete("/admin/clients", function() {
     $db  = getDB();
     $sth = $db->prepare("DELETE
                       FROM clients
-                      WHERE id = $id
-                      LIMIT 1");
+                      WHERE id = $id");
     $sth->execute();
     $db = null;
 
@@ -370,7 +368,7 @@ $app->post("/admin/users/add", function() {
   $password    = $allPostVars['password'];
   $hash        = password_hash($password, PASSWORD_DEFAULT);
 
-  // Insert Client.
+  // Insert User.
   try
   {
     $db  = getDB();
@@ -409,8 +407,7 @@ $app->delete("/admin/users", function() {
     $db  = getDB();
     $sth = $db->prepare("DELETE
                       FROM users
-                      WHERE id = $id
-                      LIMIT 1");
+                      WHERE id = $id");
     $sth->execute();
     $db = null;
 

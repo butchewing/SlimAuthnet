@@ -3,7 +3,8 @@
 {% block content %}
 <h1>{{ title }}</h1>
 <div><a href="{{ base_url }}/admin/clients/add" class="btn btn-info">Add New Client</a></div>
-<div class="bs-example">
+<div>
+  {% if data %}
   <table class="table table-hover">
     <thead>
       <tr>
@@ -15,7 +16,6 @@
       </tr>
     </thead>
     <tbody>
-      {% if data %}
       {% for row in data %}
       <tr>
         <td>{{ row.name }}</td>
@@ -32,11 +32,9 @@
         </td>
       </tr>
       {% endfor %}
-      {% else %}
-      <p>No records found</p>
-      {% endif %}
     </tbody>
   </table>
+  {% endif %}
 </div>
 {% endblock content %}
 

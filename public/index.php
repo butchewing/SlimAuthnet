@@ -39,29 +39,34 @@ function getDB()
   $dbpass       = getenv('DB_PASS');
   $dbname       = getenv('DB_NAME');
   $dbdriver     = getenv('DB_DRIVER');
-  $dsn          = "$dbdriver:server=$dbhost;database=$dbname";
+  if ($dbdriver === "mysql") {
+    $dsn = "$dbdriver:host=$dbhost;dbname=$dbname";  
+  }
+  if ($dbdriver === "sqlserv") {
+    $dsn = "$dbdriver:server=$dbhost;database=$dbname";
+  }
   $dbConnection = new PDO($dsn, $dbuser, $dbpass);
   $dbConnection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
   return $dbConnection;
 }//end getDB()
 
 
-// $app->add(
-//   new \Slim\Middleware\HttpBasicAuthentication(
-//     array(
-//       "path"          => "/admin",
-//       "realm"         => "Here be dragons.",
-//       "authenticator" => new PdoAuthenticator([
-//         "pdo"         => getDB()
-//       ]),
-//       "error"         => function ($arguments) use ($app) {
-//         $response["status"]  = "error";
-//         $response["message"] = $arguments["message"];
-//         $app->response->write(json_encode($response, JSON_UNESCAPED_SLASHES));
-//       }
-//     )
-//   )
-// );
+$app->add(
+  new \Slim\Middleware\HttpBasicAuthentication(
+    array(
+      "path"          => "/admin",
+      "realm"         => "Here be dragons.",
+      "authenticator" => new PdoAuthenticator([
+        "pdo"         => getDB()
+      ]),
+      "error"         => function ($arguments) use ($app) {
+        $response["status"]  = "error";
+        $response["message"] = $arguments["message"];
+        $app->response->write(json_encode($response, JSON_UNESCAPED_SLASHES));
+      }
+    )
+  )
+);
 
 
 // Create monolog logger and store logger in container as singleton
@@ -74,14 +79,14 @@ $app->container->singleton('log', function () {
 
 
 // Start Authentication
-// $app->add(new \Slim\Middleware\JwtAuthentication([
-//   "path"     => "/api",
-//   "logger"   => $logger,
-//   "secret"   => getenv('SECRET_KEY'),
-//   "callback" => function($options) use($app) {
-//     $app->jwt = $options["decoded"];
-//   }
-// ]));
+$app->add(new \Slim\Middleware\JwtAuthentication([
+  "path"     => "/api",
+  "logger"   => $logger,
+  "secret"   => getenv('SECRET_KEY'),
+  "callback" => function($options) use($app) {
+    $app->jwt = $options["decoded"];
+  }
+]));
 
 
 // Prepare view
@@ -126,17 +131,13 @@ $app->get("/admin/clients", function() {
     $sth->execute();
     $clients = $sth->fetchAll();
 
-    if ($clients) {
-      $params = array(
-        'data'     => $clients,
-        'title'    => 'Clients',
-        'base_url' => $base_url,
-        'page'     => 'clients'
-      );
-      $app->render('admin_clients.html', $params);
-    } else {
-      throw new PDOException('No records found.');
-    }
+    $params = array(
+      'data'     => $clients,
+      'title'    => 'Clients',
+      'base_url' => $base_url,
+      'page'     => 'clients'
+    );
+    $app->render('admin_clients.html', $params);
 
   } catch(PDOException $e) {
     $app->response()->setStatus(404);
@@ -325,17 +326,13 @@ $app->get("/admin/users", function() {
     $sth->execute();
     $users = $sth->fetchAll();
 
-    if ($users) {
-      $params = array(
-        'data'     => $users,
-        'title'    => 'Users',
-        'base_url' => $base_url,
-        'page'     => 'users'
-      );
-      $app->render('admin_users.html', $params);
-    } else {
-      throw new PDOException('No records found.');
-    }
+    $params = array(
+      'data'     => $users,
+      'title'    => 'Users',
+      'base_url' => $base_url,
+      'page'     => 'users'
+    );
+    $app->render('admin_users.html', $params);
 
     $db = null;
   } catch(PDOException $e) {

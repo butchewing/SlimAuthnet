@@ -8,6 +8,9 @@ A neat little thingy to process credit cards with Authorize.net built with Slim 
 * Authorize.net AIM Processing
 * System Logger
 
+## Requirements
+* PHP 5.3.8+
+
 ## Install Composer
 
 If you have not installed Composer, do that now. I prefer to install Composer globally in `/usr/local/bin`, but you may also install Composer locally in your current working directory. For this tutorial, I assume you have installed Composer locally.
